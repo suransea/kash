@@ -34,6 +34,7 @@ public class DiskCache {
     private static final String DEFAULT_CACHE_NAME = "kash";
     private Charset charset = StandardCharsets.UTF_8;
     private Metadata metadata;
+    private String name;
     private File cachePath;
     private File metadataFile;
     private Map<String, CacheItem> cacheItemMap;
@@ -41,7 +42,7 @@ public class DiskCache {
 
     private DiskCache(Builder builder) {
         File path = builder.path;
-        String name = builder.name;
+        name = builder.name;
         serializer = builder.serializer;
         if (path == null) {
             String homeEnv = System.getenv("HOME");
@@ -61,18 +62,15 @@ public class DiskCache {
     private void init() {
         if (metadataFile.exists()) {
             String data = new String(readFile(metadataFile), charset);
-            if (StringUtils.isEmpty(data)) {
-                metadata = new Metadata();
-            } else {
-                metadata = new Gson().fromJson(data, Metadata.class);
-                metadata.setItems(Collections.synchronizedList(metadata.getItems()));
-            }
+            metadata = new Gson().fromJson(data, Metadata.class);
+            metadata.setItems(Collections.synchronizedList(metadata.getItems()));
         } else {
             if (!cachePath.exists() && !cachePath.mkdirs()) {
                 throw new RuntimeException("cannot mkdirs.");
             }
             metadata = new Metadata();
-            metadata.setItems(new ArrayList<CacheItem>());
+            metadata.setName(name);
+            metadata.setItems(Collections.synchronizedList(new ArrayList<CacheItem>()));
             flushMetadata();
         }
         cacheItemMap = Collections.synchronizedMap(new HashMap<String, CacheItem>(metadata.getItems().size()));
@@ -90,8 +88,8 @@ public class DiskCache {
 
     public void clear() {
         FileHelper.deleteUnder(cachePath);
-        metadata.setItems(new ArrayList<CacheItem>());
-        cacheItemMap = new HashMap<>();
+        metadata.getItems().clear();
+        cacheItemMap.clear();
     }
 
     public void remove(String key) {
