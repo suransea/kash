@@ -50,7 +50,7 @@ Step 2. Add the dependency
         DiskCache anotherCache = new DiskCache.Builder()
                 .serializer(new Serializer() {
                     @Override
-                    public <T> T decode(byte[] bytes, Class<T> type) {
+                    public <T> T decode(byte[] bytes, Type type) {
                         return new Gson().fromJson(new String(bytes, StandardCharsets.UTF_8), type);
                     }
 

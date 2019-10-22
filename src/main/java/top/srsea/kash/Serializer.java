@@ -16,9 +16,11 @@
 
 package top.srsea.kash;
 
+import java.lang.reflect.Type;
+
 public interface Serializer {
 
-    <T> T decode(byte[] bytes, Class<T> type);
+    <T> T decode(byte[] bytes, Type type);
 
     byte[] encode(Object object);
 }

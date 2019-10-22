@@ -25,6 +25,7 @@ import top.srsea.kash.util.FileHelper;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -116,7 +117,7 @@ public class DiskCache {
         return new String(bytes, charset);
     }
 
-    public <T> T get(String key, Class<T> type) {
+    public <T> T get(String key, Type type) {
         byte[] bytes = getBytes(key);
         if (bytes == null) return null;
         return serializer.decode(bytes, type);
@@ -151,12 +152,12 @@ public class DiskCache {
         if (item == null) {
             item = new CacheItem();
             item.setCreatedTime(System.currentTimeMillis());
-            item.setExpiredTime(option.getExpiredTime());
             item.setKey(key);
             item.setFilename(filenameOfKey(key));
-            cacheItemMap.put(key, item);
             metadata.getItems().add(item);
+            cacheItemMap.put(key, item);
         }
+        item.setExpiredTime(option.getExpiredTime());
         flushMetadata();
         writeToFile(fileOfKey(key), bytes);
     }

@@ -18,6 +18,7 @@ package top.srsea.kash;
 
 import com.google.gson.Gson;
 
+import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -25,7 +26,7 @@ public class GsonSerializer implements Serializer {
     private Charset charset = StandardCharsets.UTF_8;
 
     @Override
-    public <T> T decode(byte[] bytes, Class<T> type) {
+    public <T> T decode(byte[] bytes, Type type) {
         return new Gson().fromJson(new String(bytes, charset), type);
     }
 
