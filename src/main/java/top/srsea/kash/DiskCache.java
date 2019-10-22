@@ -116,7 +116,7 @@ public class DiskCache {
         return new String(bytes, charset);
     }
 
-    public <T> T getAs(String key, Class<T> type) {
+    public <T> T get(String key, Class<T> type) {
         byte[] bytes = getBytes(key);
         if (bytes == null) return null;
         return serializer.decode(bytes, type);
@@ -205,6 +205,11 @@ public class DiskCache {
 
         public Builder path(File path) {
             this.path = path;
+            return this;
+        }
+
+        public Builder path(String path) {
+            this.path = new File(path);
             return this;
         }
 

@@ -16,8 +16,6 @@ repositories {
 dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.9'
     implementation 'com.google.code.gson:gson:2.8.5'
-    implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
-    implementation 'io.reactivex.rxjava2:rxjava:2.2.8'
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
