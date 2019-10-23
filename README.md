@@ -30,6 +30,9 @@ Step 2. Add the dependency
         DiskCache cache = new DiskCache.Builder()
                 .name("sample") //缓存名称
                 .path("./cache") //缓存根目录
+                .enableMemoryCache() //是否启用内存缓存
+                .maxMemoryCacheCount(5) //内存缓存数量限制
+                .maxMemoryCacheSingleSize(1024) //内存缓存单值大小限制
                 .build();
 
         cache.put("name", "Alice"); //缓存字符串

@@ -22,6 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 import top.srsea.kash.pojo.CacheItem;
 import top.srsea.kash.pojo.Metadata;
 import top.srsea.kash.util.FileHelper;
+import top.srsea.kash.util.LruCache;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,11 +43,18 @@ public class DiskCache {
     private File metadataFile;
     private Map<String, CacheItem> cacheItemMap;
     private Serializer serializer;
+    private boolean enableMemoryCache;
+    private int maxMemoryCacheCount;
+    private int maxMemoryCacheSingleSize;
+    private LruCache<String, byte[]> memoryCache;
 
     private DiskCache(Builder builder) {
         File path = builder.path;
         name = builder.name;
         serializer = builder.serializer;
+        enableMemoryCache = builder.enableMemoryCache;
+        maxMemoryCacheCount = builder.maxMemoryCacheCount;
+        maxMemoryCacheSingleSize = builder.maxMemoryCacheSingleSize;
         if (path == null) {
             String homeEnv = System.getenv("HOME");
             if (!StringUtils.isEmpty(homeEnv)) {
@@ -59,10 +67,10 @@ public class DiskCache {
         if (serializer == null) serializer = new GsonSerializer();
         cachePath = new File(path, name);
         metadataFile = new File(cachePath, FILENAME_METADATA);
-        init();
+        initialize();
     }
 
-    private void init() {
+    private void initialize() {
         if (metadataFile.exists()) {
             String data = new String(readFile(metadataFile), charset);
             metadata = new Gson().fromJson(data, Metadata.class);
@@ -88,19 +96,27 @@ public class DiskCache {
             cacheItemMap.put(item.getKey(), item);
         }
         flushMetadata();
+        if (enableMemoryCache) {
+            memoryCache = new LruCache<>(maxMemoryCacheCount);
+        }
         logger.info(String.format("DiskCache %s initialized.", name));
     }
 
-    public void clear() {
-        FileHelper.deleteUnder(cachePath);
+    public void evictAll() {
         metadata.getItems().clear();
         cacheItemMap.clear();
+        if (enableMemoryCache) memoryCache.evictAll();
+        FileHelper.deleteUnder(cachePath);
     }
 
     public void remove(String key) {
         CacheItem item = cacheItemMap.get(key);
         if (item == null) return;
         remove(item);
+    }
+
+    public int size() {
+        return metadata.getItems().size();
     }
 
     public byte[] getBytes(String key) {
@@ -112,7 +128,20 @@ public class DiskCache {
             remove(item);
             return null;
         }
-        return readFile(fileOfKey(key));
+        if (enableMemoryCache) {
+            byte[] result = memoryCache.get(key);
+            if (result != null) {
+                return result;
+            }
+        }
+        byte[] result = readFile(fileOfKey(key));
+        if (enableMemoryCache) {
+            if (result.length > maxMemoryCacheSingleSize) {
+                return result;
+            }
+            memoryCache.put(key, result);
+        }
+        return result;
     }
 
     public String getString(String key) {
@@ -152,6 +181,9 @@ public class DiskCache {
     }
 
     private void putBytes(String key, byte[] bytes, CacheOption option) {
+        if (enableMemoryCache) {
+            memoryCache.put(key, bytes);
+        }
         CacheItem item = cacheItemMap.get(key);
         if (item == null) {
             item = new CacheItem();
@@ -169,6 +201,7 @@ public class DiskCache {
     private void remove(CacheItem item) {
         cacheItemMap.remove(item.getKey());
         metadata.getItems().remove(item);
+        if (enableMemoryCache) memoryCache.remove(item.getKey());
         flushMetadata();
         FileHelper.delete(fileOfKey(item.getKey()));
     }
@@ -209,6 +242,24 @@ public class DiskCache {
         private File path;
         private String name;
         private Serializer serializer;
+        private boolean enableMemoryCache = false;
+        private int maxMemoryCacheCount = 5;
+        private int maxMemoryCacheSingleSize = 8192;
+
+        public Builder enableMemoryCache() {
+            this.enableMemoryCache = true;
+            return this;
+        }
+
+        public Builder maxMemoryCacheCount(int maxMemoryCacheCount) {
+            this.maxMemoryCacheCount = maxMemoryCacheCount;
+            return this;
+        }
+
+        public Builder maxMemoryCacheSingleSize(int maxMemoryCacheSingleSize) {
+            this.maxMemoryCacheSingleSize = maxMemoryCacheSingleSize;
+            return this;
+        }
 
         public Builder path(File path) {
             this.path = path;
