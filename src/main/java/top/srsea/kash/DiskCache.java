@@ -29,10 +29,12 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class DiskCache {
     private static final String FILENAME_METADATA = "kash-metadata.json";
     private static final String DEFAULT_CACHE_NAME = "kash";
+    private static Logger logger = Logger.getLogger("DiskCache");
     private Charset charset = StandardCharsets.UTF_8;
     private Metadata metadata;
     private String name;
@@ -73,6 +75,7 @@ public class DiskCache {
             metadata.setName(name);
             metadata.setItems(Collections.synchronizedList(new ArrayList<CacheItem>()));
             flushMetadata();
+            logger.info("new metadata file created.");
         }
         cacheItemMap = Collections.synchronizedMap(new HashMap<String, CacheItem>(metadata.getItems().size()));
         for (Iterator<CacheItem> it = metadata.getItems().iterator(); it.hasNext(); ) {
@@ -85,6 +88,7 @@ public class DiskCache {
             cacheItemMap.put(item.getKey(), item);
         }
         flushMetadata();
+        logger.info(String.format("DiskCache %s initialized.", name));
     }
 
     public void clear() {
@@ -187,6 +191,7 @@ public class DiskCache {
             FileHelper.write(file, bytes);
         } catch (IOException e) {
             e.printStackTrace();
+            logger.severe(e.getMessage());
         }
     }
 
@@ -194,6 +199,7 @@ public class DiskCache {
         try {
             return FileHelper.readAll(file);
         } catch (IOException e) {
+            logger.severe(e.getMessage());
             e.printStackTrace();
             return new byte[0];
         }
