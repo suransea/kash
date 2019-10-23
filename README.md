@@ -4,6 +4,27 @@
 
 ##### 磁盘缓存工具
 
+
+#### Maven
+
+Step 1. Add the JitPack repository to your build file
+
+	<repositories>
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
+	</repositories>
+
+Step 2. Add the dependency
+
+	<dependency>
+	    <groupId>com.github.suransea</groupId>
+	    <artifactId>kash</artifactId>
+	    <version>x.y.z</version>
+	</dependency>
+
+
 #### Gradle
 
 Step 1. Add the JitPack repository to your build file
@@ -44,7 +65,7 @@ Step 2. Add the dependency
         cache.put("user", user); //缓存POJO
 
         System.out.println(cache.getString("name"));
-        System.out.println(cache.get("age", int.class));
+        System.out.println(cache.get("age", Integer.class));
         System.out.println(cache.get("user", User.class));
 
         long expiredTime = System.currentTimeMillis() + TimeUnit.HOURS.toMillis(1);
