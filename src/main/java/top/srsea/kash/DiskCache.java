@@ -189,7 +189,7 @@ public class DiskCache {
             item = new CacheItem();
             item.setCreatedTime(System.currentTimeMillis());
             item.setKey(key);
-            item.setFilename(filenameOfKey(key));
+            item.setFilename(newFilename());
             metadata.getItems().add(item);
             cacheItemMap.put(key, item);
         }
@@ -211,7 +211,11 @@ public class DiskCache {
     }
 
     private String filenameOfKey(String key) {
-        return String.valueOf(key.hashCode());
+        return cacheItemMap.get(key).getFilename();
+    }
+
+    private String newFilename() {
+        return UUID.randomUUID().toString();
     }
 
     private void flushMetadata() {
@@ -232,8 +236,8 @@ public class DiskCache {
         try {
             return FileHelper.readAll(file);
         } catch (IOException e) {
-            logger.severe(e.getMessage());
             e.printStackTrace();
+            logger.severe(e.getMessage());
             return new byte[0];
         }
     }
