@@ -4,7 +4,7 @@ apply plugin: 'maven'
 group = 'com.github.suransea'
 
 group 'top.srsea'
-version '1.0.0-alpha6'
+version '1.0.0-alpha7'
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
