@@ -18,9 +18,29 @@ package top.srsea.kash;
 
 import java.lang.reflect.Type;
 
+/**
+ * Serialize and deserialize objects.
+ *
+ * @author sea
+ * @see GsonSerializer
+ */
 public interface Serializer {
 
+    /**
+     * Deserialize an object from bytes.
+     *
+     * @param bytes bytes to decode
+     * @param type  type of object
+     * @param <T>   class of object
+     * @return object decoded
+     */
     <T> T decode(byte[] bytes, Type type);
 
+    /**
+     * Serialize an object to bytes.
+     *
+     * @param object object to encode
+     * @return bytes encoded
+     */
     byte[] encode(Object object);
 }

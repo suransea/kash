@@ -16,11 +16,34 @@
 
 package top.srsea.kash.pojo;
 
+/**
+ * A pojo of cache item in cache metadata.
+ *
+ * @author sea
+ */
 public class CacheItem {
+
+    /**
+     * Key of cache.
+     */
     private String key;
+
+    /**
+     * The filename of cache.
+     */
     private String filename;
+
+    /**
+     * Created timestamp of cache.
+     */
     private Long createdTime;
+
+    /**
+     * Expired time of cache.
+     */
     private Long expiredTime;
+
+    //getter and setter begin
 
     public String getFilename() {
         return filename;
@@ -53,4 +76,6 @@ public class CacheItem {
     public void setExpiredTime(Long expiredTime) {
         this.expiredTime = expiredTime;
     }
+
+    //getter and setter end
 }

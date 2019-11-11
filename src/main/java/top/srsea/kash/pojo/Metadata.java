@@ -18,9 +18,26 @@ package top.srsea.kash.pojo;
 
 import java.util.List;
 
+/**
+ * A pojo of cache metadata.
+ *
+ * @author sea
+ */
 public class Metadata {
+
+    /**
+     * Cache name.
+     */
     private String name;
+
+    /**
+     * Items of this cache.
+     *
+     * @see CacheItem
+     */
     private List<CacheItem> items;
+
+    //getter and setter begin
 
     public String getName() {
         return name;
@@ -37,4 +54,6 @@ public class Metadata {
     public void setItems(List<CacheItem> items) {
         this.items = items;
     }
+
+    //getter and setter end
 }

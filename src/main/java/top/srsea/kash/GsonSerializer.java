@@ -22,14 +22,38 @@ import java.lang.reflect.Type;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
+/**
+ * A serializer based on {@link Gson}.
+ *
+ * @author sea
+ * @see Serializer
+ */
 public class GsonSerializer implements Serializer {
+
+    /**
+     * Charset to convert between string and bytes.
+     */
     private Charset charset = StandardCharsets.UTF_8;
 
+    /**
+     * Deserialize an object from bytes.
+     *
+     * @param bytes bytes to decode
+     * @param type  type of object
+     * @param <T>   class of object
+     * @return object decoded
+     */
     @Override
     public <T> T decode(byte[] bytes, Type type) {
         return new Gson().fromJson(new String(bytes, charset), type);
     }
 
+    /**
+     * Serialize an object to bytes.
+     *
+     * @param object object to encode
+     * @return bytes encoded
+     */
     @Override
     public byte[] encode(Object object) {
         return new Gson().toJson(object).getBytes(charset);
