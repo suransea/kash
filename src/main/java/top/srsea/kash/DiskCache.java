@@ -140,8 +140,7 @@ public class DiskCache {
     }
 
     /**
-     * Initializes this cache, you need call this method
-     * before you use this cache object.
+     * Initializes this cache.
      */
     private void initialize() {
         if (metadataFile.exists()) {
