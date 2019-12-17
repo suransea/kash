@@ -1,11 +1,10 @@
-## Kash
+# Kash
 
 [![](https://jitpack.io/v/suransea/kash.svg?style=flat-square)](https://jitpack.io/#suransea/kash)
 
-##### 磁盘缓存工具
+磁盘缓存工具
 
-
-#### Maven
+## Maven
 
 Step 1. Add the JitPack repository to your build file
 
@@ -25,7 +24,7 @@ Step 2. Add the dependency
 	</dependency>
 
 
-#### Gradle
+## Gradle
 
 Step 1. Add the JitPack repository to your build file
 
@@ -44,8 +43,7 @@ Step 2. Add the dependency
 	        implementation 'com.github.suransea:kash:x.y.z'
 	}
 	
-#### 使用
-
+## Usage
 
 ```java
         DiskCache cache = new DiskCache.Builder()
