@@ -59,54 +59,44 @@ public class DiskCache {
     /**
      * Charset for converting between bytes and string.
      */
-    private Charset charset = StandardCharsets.UTF_8;
-
-    /**
-     * The metadata of this cache.
-     */
-    private Metadata metadata;
-
-    /**
-     * The name of this cache, default is {@link DiskCache#DEFAULT_CACHE_NAME}.
-     */
-    private String name;
-
+    private final Charset charset = StandardCharsets.UTF_8;
     /**
      * The parent path of this cache, default is {@code "${HOME}/.cache"}, or "." when ${HOME} is empty.
      */
-    private File cachePath;
-
+    private final File cachePath;
     /**
      * The metadata file object.
      */
-    private File metadataFile;
-
-    /**
-     * The cache item map build from metadata.
-     */
-    private Map<String, CacheItem> cacheItemMap;
-
-    /**
-     * The serializer to converting between objects and bytes.
-     */
-    private Serializer serializer;
-
+    private final File metadataFile;
     /**
      * A value whether to use memory cache.
      */
-    private boolean enableMemoryCache;
-
+    private final boolean enableMemoryCache;
     /**
      * Max size of memory cache.
      */
-    private int maxMemoryCacheCount;
-
+    private final int maxMemoryCacheCount;
     /**
      * Don't cache bytes when cache item size greater than this value.
      * This value is useless when memory cache disabled.
      */
-    private int maxMemoryCacheSingleSize;
-
+    private final int maxMemoryCacheSingleSize;
+    /**
+     * The metadata of this cache.
+     */
+    private Metadata metadata;
+    /**
+     * The name of this cache, default is {@link DiskCache#DEFAULT_CACHE_NAME}.
+     */
+    private String name;
+    /**
+     * The cache item map build from metadata.
+     */
+    private Map<String, CacheItem> cacheItemMap;
+    /**
+     * The serializer to converting between objects and bytes.
+     */
+    private Serializer serializer;
     /**
      * Memory cache, {@code null} when memory cache disabled.
      */
@@ -157,7 +147,7 @@ public class DiskCache {
             writeMetadata();
             logger.info("new metadata file created.");
         }
-        cacheItemMap = Collections.synchronizedMap(new HashMap<String, CacheItem>(metadata.getItems().size()));
+        cacheItemMap = new HashMap<>(metadata.getItems().size());
         for (Iterator<CacheItem> it = metadata.getItems().iterator(); it.hasNext(); ) {
             CacheItem item = it.next();
             if (item.getExpiredTime() != null && System.currentTimeMillis() >= item.getExpiredTime()) {
@@ -346,7 +336,7 @@ public class DiskCache {
             metadata.getItems().add(item);
             cacheItemMap.put(key, item);
         }
-        item.setExpiredTime(option.getExpiredTime());
+        item.setExpiredTime(option.expiredTime());
         writeMetadata();
         writeToFile(fileOfKey(key), bytes);
     }

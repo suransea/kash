@@ -22,6 +22,7 @@ package top.srsea.kash;
  * @author sea
  */
 public class CacheOption {
+    private static final CacheOption EMPTY = new CacheOption();
 
     /**
      * Expired time of cache item.
@@ -29,35 +30,22 @@ public class CacheOption {
     private Long expiredTime;
 
     /**
-     * Creates a new CacheOption contains the specific expired time.
-     *
-     * @param expiredTime the specific expired time
-     * @return CacheOption contains the specific expired time
-     */
-    public static CacheOption expiredTime(long expiredTime) {
-        CacheOption option = new CacheOption();
-        option.expiredTime = expiredTime;
-        return option;
-    }
-
-    /**
-     * Creates a new CacheOption contains no option.
+     * Empty CacheOption.
      *
      * @return CacheOption contains no option
      */
     public static CacheOption empty() {
-        return new CacheOption();
+        return EMPTY;
     }
 
-    //getter and setter begin
-
-    public Long getExpiredTime() {
+    public Long expiredTime() {
         return expiredTime;
     }
 
-    public void setExpiredTime(Long expiredTime) {
-        this.expiredTime = expiredTime;
+    public CacheOption expiredTime(Long expiredTime) {
+        if (this != EMPTY) {
+            this.expiredTime = expiredTime;
+        }
+        return this;
     }
-
-    //getter and setter end
 }

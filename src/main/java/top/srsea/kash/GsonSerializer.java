@@ -33,7 +33,7 @@ public class GsonSerializer implements Serializer {
     /**
      * Charset to convert between string and bytes.
      */
-    private Charset charset = StandardCharsets.UTF_8;
+    private final Charset charset = StandardCharsets.UTF_8;
 
     /**
      * Deserialize an object from bytes.
