@@ -17,8 +17,6 @@
 package top.srsea.kash;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.apache.commons.lang3.StringUtils;
 import top.srsea.kash.pojo.CacheItem;
 import top.srsea.kash.pojo.Metadata;
 import top.srsea.kash.util.FileHelper;
@@ -116,7 +114,7 @@ public class DiskCache {
         maxMemoryCacheSingleSize = builder.maxMemoryCacheSingleSize;
         if (path == null) {
             String homeEnv = System.getenv("HOME");
-            if (!StringUtils.isEmpty(homeEnv)) {
+            if (homeEnv != null && !homeEnv.isEmpty()) {
                 path = new File(new File(homeEnv), ".cache");
             } else {
                 path = new File(".");
@@ -136,14 +134,13 @@ public class DiskCache {
         if (metadataFile.exists()) {
             String data = new String(readFile(metadataFile), charset);
             metadata = new Gson().fromJson(data, Metadata.class);
-            metadata.setItems(Collections.synchronizedList(metadata.getItems()));
         } else {
             if (!cachePath.exists() && !cachePath.mkdirs()) {
                 throw new RuntimeException("cannot mkdirs.");
             }
             metadata = new Metadata();
             metadata.setName(name);
-            metadata.setItems(Collections.synchronizedList(new ArrayList<CacheItem>()));
+            metadata.setItems(new ArrayList<CacheItem>());
             writeMetadata();
             logger.info("new metadata file created.");
         }
@@ -388,7 +385,7 @@ public class DiskCache {
      * Writes the metadata to disk.
      */
     private void writeMetadata() {
-        String data = new GsonBuilder().setPrettyPrinting().create().toJson(metadata);
+        String data = new Gson().toJson(metadata);
         writeToFile(metadataFile, data.getBytes(charset));
     }
 
